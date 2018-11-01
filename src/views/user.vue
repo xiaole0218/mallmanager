@@ -16,13 +16,87 @@
       </el-col>
     </el-row>
   <!--表格-->
+    <el-table
+      style="width: 100%">
+      <el-table-column
+        :type="index"
+        prop="date"
+        label="日期"
+        width="100">
+      </el-table-column>
+      <el-table-column
+        prop="date"
+        label="姓名"
+        width="100">
+      </el-table-column>
+      <el-table-column
+        prop="date"
+        label="邮箱"
+        width="100">
+      </el-table-column>
+      <el-table-column
+        prop="date"
+        label="电话"
+        width="100">
+      </el-table-column>
+      <el-table-column
+        prop="date"
+        label="创建日期"
+        width="80">
+      </el-table-column>
+      <el-table-column
+        prop="date"
+        label="用户状态"
+        width="120">
+      </el-table-column>
+      <el-table-column
+        prop="date"
+        label="操作"
+        width="140">
+      </el-table-column>
+
+    </el-table>
   <!--分页-->
   </el-card>
 </template>
 
 <script>
     export default {
-        name: "user"
+        name: "user",
+      data() {
+        return {
+          tableData: [{
+            date: '2016-05-02',
+            name: '王小虎',
+            address: '上海市普陀区金沙江路 1518 弄'
+          }, {
+            date: '2016-05-04',
+            name: '王小虎',
+            address: '上海市普陀区金沙江路 1517 弄'
+          }, {
+            date: '2016-05-01',
+            name: '王小虎',
+            address: '上海市普陀区金沙江路 1519 弄'
+          }, {
+            date: '2016-05-03',
+            name: '王小虎',
+            address: '上海市普陀区金沙江路 1516 弄'
+          }]
+        }
+      },
+      mounted() {
+          this.loadTableDate();
+      },
+      methods: {
+          async loadTableDate() {
+            //除了登陆功能，其他功能的接口都需要加入  token  才有请求的权限
+            //header  添加token
+            const AUTH_TOKEN = sessionStorage.getItem('token')
+            this.$http.defaults.headers.common['Authorization'] = AUTH_TOKEN;
+           const res = await this.$http.get('users?pagenum=1&pagesize=10')
+            console.log(res)
+          }
+      }
     }
 </script>
 

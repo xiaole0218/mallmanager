@@ -33,7 +33,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button @click="dialogFormVisibleAdduser = false">取 消</el-button>
         <el-button type="primary" @click="addUser()">确 定</el-button>
       </div>
     </el-dialog>
@@ -51,8 +51,35 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button>取 消</el-button>
+        <el-button @click="dialogFormVisibleEdituser = false">取 消</el-button>
         <el-button type="primary" @click="editUser()">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!--分配权限的对话框-->
+    <el-dialog title="分配权限" :visible.sync="dialogFormVisibleSetrole">
+      <el-form :model="formData">
+        <el-form-item label="用户名" :label-width="formLabelWidth">
+          {{currentUserName}}
+        </el-form-item>
+        <el-form-item label="角色" :label-width="formLabelWidth">
+          <el-select v-model="currentRoleId">
+            <!--请选择-->
+            <el-option disabled label="请选择" :value="-1">
+
+            </el-option>
+            <!--遍历数组-->
+            <el-option
+              v-for="(item,index) in roles"
+              :label="item.roleName"
+              :key="index"
+              :value="item.id">
+            </el-option>
+          </el-select>
+      </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisibleSetrole = false">取 消</el-button>
+        <el-button type="primary" @click="setRole()">确 定</el-button>
       </div>
     </el-dialog>
     <!--表格-->
@@ -111,7 +138,7 @@
         width="140">
         <template slot-scope="scope">
           <el-button type="primary" icon="el-icon-edit" size="mini" plain circle @click="showEditBox(scope.row.id)"></el-button>
-          <el-button type="success" icon="el-icon-check" size="mini" plain circle></el-button>
+          <el-button type="success" icon="el-icon-check" size="mini" plain circle @click="showRoleBox(scope.row)"></el-button>
           <el-button type="danger" icon="el-icon-delete" size="mini" plain circle
                      @click="showDeleBox(scope.row.id)"></el-button>
         </template>
@@ -155,7 +182,17 @@
         //对话框input 的宽度
         formLabelWidth: '120px',
         // 编辑用户对话框属性
-        dialogFormVisibleEdituser: false
+        dialogFormVisibleEdituser: false,
+        // 分配权限的对话框属性
+        dialogFormVisibleSetrole: false,
+        //当前用户名
+        currentUserName: '',
+        //当前的角色名
+        currentRoleId: -1,
+        //所有角色
+        roles: [],
+        //用户id
+        currentUserId: -1
       }
     },
     // created  页面出现之前
@@ -165,6 +202,37 @@
       this.loadTableDate();
     },
     methods: {
+      //分配权限- 发送请求
+      async setRole () {
+        //发送请求
+        // users/:id/role  （rid: 角色id）
+        const res = await this.$http.put(`users/${this.currentUserId}/role`,{
+          rid:this.currentRoleId
+        })
+        // console.log(res)
+        const {meta:{status,msg}} = res.data
+        //提示框
+        this.$message.success(msg)
+        //关闭对话框
+        this.dialogFormVisibleSetrole = false
+      },
+      //分配权限 - 显示对话框
+      async showRoleBox (user) {
+        //获取用户id
+        this.currentUserId = user.id
+
+        this.currentUserName = user.username
+        this.dialogFormVisibleSetrole = true
+        const res = await this.$http.get('roles')
+        // console.log(res)
+        const res2 = await this.$http.get(`users/${user.id}`)
+
+        // console.log(res2.data.data.rid)
+        this.currentRoleId = res2.data.data.rid
+        this.roles = res.data.data
+        // console.log(this.roles)
+
+      },
       //编辑用户，发送请求
       async editUser() {
         //关闭对话框
@@ -232,9 +300,10 @@
           }
 
         }).catch(() => {
+
           this.$message({
             type: 'info',
-            message: msg
+            message: '不好意思，删除失败了'
           });
         });
       },

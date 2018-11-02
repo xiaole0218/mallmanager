@@ -37,10 +37,24 @@
         <el-button type="primary" @click="addUser()">确 定</el-button>
       </div>
     </el-dialog>
-
-
-
-
+    <!--编辑用户对话框-->
+    <el-dialog title="编辑用户" :visible.sync="dialogFormVisibleEdituser">
+      <el-form :model="formData">
+        <el-form-item label="用户名" :label-width="formLabelWidth">
+          <el-input disabled v-model="formData.username" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" :label-width="formLabelWidth">
+          <el-input v-model="formData.email" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电话" :label-width="formLabelWidth">
+          <el-input v-model="formData.mobile" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button>取 消</el-button>
+        <el-button type="primary" @click="editUser()">确 定</el-button>
+      </div>
+    </el-dialog>
     <!--表格-->
     <el-table
       :data="list"
@@ -96,7 +110,7 @@
         label="操作"
         width="140">
         <template slot-scope="scope">
-          <el-button type="primary" icon="el-icon-edit" size="mini" plain circle></el-button>
+          <el-button type="primary" icon="el-icon-edit" size="mini" plain circle @click="showEditBox(scope.row.id)"></el-button>
           <el-button type="success" icon="el-icon-check" size="mini" plain circle></el-button>
           <el-button type="danger" icon="el-icon-delete" size="mini" plain circle
                      @click="showDeleBox(scope.row.id)"></el-button>
@@ -139,7 +153,9 @@
           mobile: ''
         },
         //对话框input 的宽度
-        formLabelWidth: '120px'
+        formLabelWidth: '120px',
+        // 编辑用户对话框属性
+        dialogFormVisibleEdituser: false
       }
     },
     // created  页面出现之前
@@ -149,6 +165,32 @@
       this.loadTableDate();
     },
     methods: {
+      //编辑用户，发送请求
+      async editUser() {
+        //关闭对话框
+        this.dialogFormVisibleEdituser = false
+
+        const res = await this.$http.put(`users/${this.formData.id}`, this.formData)
+        // console.log(res)
+        //提示框
+        this.$message.success(res.data.meta.msg)
+
+      },
+      //显示编辑对话框
+      async showEditBox (userId) {
+        //显示对话框
+        this.dialogFormVisibleEdituser = true
+        //发送请球
+        const res = await this.$http.get(`users/${userId}`)
+        // console.log(res)
+        //刷新视图
+        this.loadTableDate()
+        //提示框
+        this.formData = res.data.data
+        // console.log(this.formData)
+
+
+      },
       //添加用户
       async addUser() {
         //关闭对话框

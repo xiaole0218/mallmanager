@@ -40,6 +40,8 @@
                   this.$message.warning(meta.msg);
                 }
         }
+        //之前的写法
+
         // handleLogin() {
         //   this.$http.post('login', this.formdata)
         //     .then((res) => {

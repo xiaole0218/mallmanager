@@ -59,6 +59,7 @@
           <!--scope.row  就是list 中的每个元素 这里是{}-->
           <!--scope.row.mg_state-->
           <el-switch
+            @change = "changeSwitchMgstate(scope.row)"
             v-model="scope.row.mg_state"
             active-color="#13ce66"
             inactive-color="#ff4949">
@@ -72,7 +73,7 @@
         <template slot-scope="scope">
             <el-button type="primary" icon="el-icon-edit" size="mini" plain circle></el-button>
             <el-button type="success" icon="el-icon-check" size="mini" plain circle></el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini" plain circle></el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" plain circle @click="showDeleBox(scope.row.id)"></el-button>
         </template>
       </el-table-column>
 
@@ -112,6 +113,38 @@
           this.loadTableDate();
       },
       methods: {
+          //显示删除提示框
+        showDeleBox(userId) {
+          this.$confirm('皇上大人，确认要删除么？', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then( async () => {
+           const res = await this.$http.delete(`users/${userId}`)
+            // console.log(res)
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            });
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            });
+          });
+        },
+          //改变用户状态
+        async changeSwitchMgstate (user) {
+          // users/:uId/state/:type
+          //  :uid ->  user.id
+          // : type -> true  或者 false
+          const res = await this.$http.put(`users/${user.id}/state/${user.mg_state}`)
+          // console.log(res)
+          const {meta: {status,msg}} = res.data
+          if (status === 200) {
+            this.$message.success(msg)
+          }
+        },
           //查询用户
         checkUser () {
             this.loadTableDate()

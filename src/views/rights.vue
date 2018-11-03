@@ -6,22 +6,34 @@
   <my-bread level1="权限管理" level2="权限列表"></my-bread>
   <!--表格-->
   <el-table
+    class="table"
     :data="list"
     border
+    height="700"
     style="width: 100%">
     <el-table-column
-      prop="date"
-      label="日期"
-      width="180">
+      type="index"
+      label="#"
+      width="80">
     </el-table-column>
     <el-table-column
-      prop="name"
-      label="姓名"
-      width="180">
+      prop="authName"
+      label="权限名称"
+      width="100">
     </el-table-column>
     <el-table-column
-      prop="address"
-      label="地址">
+      prop="path"
+      label="路径"
+      width="80">
+    </el-table-column>
+    <el-table-column
+      prop="level"
+      label="层级">
+      <template slot-scope="scope">
+        <span v-if="scope.row.level==='0'">一级</span>
+        <span v-else-if="scope.row.level==='1'">二级</span>
+        <span v-eles-if="scope.row.level==='2'">三级</span>
+      </template>
     </el-table-column>
   </el-table>
 
@@ -31,6 +43,11 @@
 <script>
     export default {
         name: "rights",
+      data() {
+        return {
+          list: []
+        }
+      },
       created() {
           this.loadTableData()
       },
@@ -40,6 +57,7 @@
             //一次性设置授权  = token
             const res = await this.$http.get(`rights/list`)
             console.log(res)
+            this.list = res.data.data
           }
       }
       
@@ -50,5 +68,8 @@
 <style scoped>
   .box-card {
     height: 100%;
+  }
+  .table {
+    margin-top: 25px;
   }
 </style>

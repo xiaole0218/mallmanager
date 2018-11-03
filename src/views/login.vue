@@ -28,7 +28,7 @@
       methods: {
         async handleLogin() {
           const res = await this.$http.post('login', this.formdata)
-           console.log(res)
+           // console.log(res)
           const {meta} = res.data
                 if (meta.status === 200) {
                   const token = res.data.data.token

@@ -6,11 +6,14 @@ import moment from 'moment'
 import 'element-ui/lib/theme-chalk/index.css';
 import HttpTool from '@/pulign/http.js'
 import App from './App'
+import MyBread from '@/components/myBread'
 import router from './router'
 import '@/assets/css/index.css'
 Vue.use(ElementUI);
 Vue.use(HttpTool);
 
+
+Vue.component(MyBread.name,MyBread)
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

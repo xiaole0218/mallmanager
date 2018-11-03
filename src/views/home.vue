@@ -99,10 +99,12 @@
 
 <script>
     export default {
-        name: "Home",
+        // name: "Home",
       //判断token
       beforeCreate() {
-          const token = sessionStorage.getItem('token')
+        const token = sessionStorage.getItem('token')
+        // console.log(token)
+        // console.log(!token)
         if (!token) {
           this.$router.push('/login')
           this.$message.warning('请先登陆')

@@ -242,6 +242,7 @@
         // console.log(res)
         //提示框
         this.$message.success(res.data.meta.msg)
+        this.formData = {}
 
       },
       //显示编辑对话框

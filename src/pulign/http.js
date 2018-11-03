@@ -5,8 +5,8 @@ HttpTool.install = (Vue) => {
   axios.defaults.baseURL = 'http://localhost:8888/api/private/v1/'
 
   axios.interceptors.request.use(function (config) {
-    // console.log('------')
-    // console.log(config)
+    console.log('------')
+    console.log(config)
     const AUTH_TOKEN = sessionStorage.getItem('token')
     config.headers.common['Authorization'] = AUTH_TOKEN;
     // 在发送请求之前做些什么

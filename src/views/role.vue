@@ -14,20 +14,23 @@
         <template slot-scope="scope">
           <el-row class="level1" v-for="(item1,index) in scope.row.children" :key="index">
             <el-col :span="4">
-              <el-tag closable type="success">{{item1.authName}}</el-tag>
+              <el-tag @close="deleRole(scope.row,item1.id)" closable type="success">{{item1.authName}}</el-tag>
               <i class="el-icon-arrow-right"></i>
             </el-col>
             <el-col :span="20">
               <el-row class="level2" v-for="(item2,index) in item1.children" :key="index">
                 <el-col :span="4">
-                  <el-tag closable type="warning">{{item2.authName}}</el-tag>
+                  <el-tag @close="deleRole(scope.row,item2.id)" closable type="warning">{{item2.authName}}</el-tag>
                   <i class="el-icon-arrow-right"></i>
                 </el-col>
                 <el-col :span="20">
-                  <el-tag closable type="error" v-for="(item3,index) in item2.children" :key="index">{{item3.authName}}</el-tag>
+                  <el-tag @close="deleRole(scope.row,item3.id)" closable type="error" v-for="(item3,index) in item2.children" :key="index">{{item3.authName}}</el-tag>
                 </el-col>
               </el-row>
             </el-col>
+          </el-row>
+          <el-row v-if="scope.row.children.length ===0">
+            未分配任何权限
           </el-row>
         </template>
       </el-table-column>
@@ -70,9 +73,21 @@
           this.loadTableData()
       },
       methods: {
+          //删除权限
+      async deleRole (roleId,rightId) {
+          // roles/:roleId/rights/:rightId
+        const res = await this.$http.delete(`roles/${roleId.id}/rights/${rightId}`)
+        console.log(res)
+        // this.loadTableData()
+        //更新当前的children  -> scope.row
+        //返回的响应中， 有当前角色剩余的权限信息
+        //只更新当前children 的值
+        roleId.children = res.data.data
+
+        },
           async loadTableData () {
             const res = await this.$http.get(`roles`)
-            console.log(res)
+            // console.log(res)
             this.rolelist = res.data.data
           }
       }

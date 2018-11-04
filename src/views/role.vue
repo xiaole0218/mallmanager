@@ -67,6 +67,7 @@
       <template slot-scope="scope">
         <!--属性结构-->
         <el-tree
+          ref="tree"
           node-key="id"
           :data="treelist"
           :props="defaultProps"
@@ -106,14 +107,28 @@
       },
       methods: {
           //修改权限
-        setRight() {
-          this.dialogVisible = true
+       async setRight() {
+          this.dialogVisible = false
           // roles/:roleId/rights
           //获取全选的ID值
           // getCheckedKeys
           //获取半选的id值
           // getHalfCheckedKeys
-
+          const arr1 = this.$refs.tree.getCheckedKeys()
+         // console.log(arr1)
+          const arr2 = this.$refs.tree.getHalfCheckedKeys()
+         // console.log(arr2)
+         const arr = [...arr1,...arr2]
+         // console.log(arr)
+          const res = await this.$http.post(`roles/${this.roleId}/rights`,{
+            rids:arr.join(',')
+          })
+         // console.log(res)
+         const {meta:{status,msg}} = res.data
+         if (status===200) {
+           this.$message.success(msg)
+           this.loadTableData()
+         }
         },
           //显示分配权限对话框+请求列表数据
         async showSetRightDia (role) {
@@ -121,7 +136,7 @@
           // console.log(role)
           this.dialogVisible = true
           const res = await this.$http.get(`rights/tree`)
-          console.log(res)
+          // console.log(res)
           this.treelist = res.data.data
           //expandeArr  赋值
           const arr = []
@@ -140,9 +155,9 @@
           //默认选中的数组
           const arrcheck = []
           role.children.forEach(item1 => {
-            arrcheck.push(item1.id)
+            // arrcheck.push(item1.id)
             item1.children.forEach(item2 => {
-              arrcheck.push(item2.id)
+              // arrcheck.push(item2.id)
               item2.children.forEach(item3 => {
                 arrcheck.push(item3.id)
 
